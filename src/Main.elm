@@ -1,7 +1,8 @@
 module Main exposing (Model, Msg(..), init, main, update, view)
 
 import Browser
-import Html exposing (Html, div, input, label, text)
+import Char exposing (isDigit, isLower, isUpper)
+import Html exposing (Html, a, div, input, label, text)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
 
@@ -20,16 +21,16 @@ main =
 
 
 type alias Model =
-    { content : String
-    , length : Int
+    { name : String
+    , password : String
+    , passwordAgain : String
     }
 
 
 init : Model
 init =
-    { content = ""
-    , length = 0
-    }
+    -- short-hand for {name="", password=""...etc}
+    Model "" "" ""
 
 
 
@@ -37,14 +38,22 @@ init =
 
 
 type Msg
-    = Change String
+    = Name String
+    | Password String
+    | PasswordAgain String
 
 
 update : Msg -> Model -> Model
 update msg model =
     case msg of
-        Change newContent ->
-            { model | content = newContent, length = String.length newContent }
+        Name name ->
+            { model | name = name }
+
+        Password password ->
+            { model | password = password }
+
+        PasswordAgain passwordAgain ->
+            { model | passwordAgain = passwordAgain }
 
 
 
@@ -54,10 +63,47 @@ update msg model =
 view : Model -> Html Msg
 view model =
     div []
-        [ label [ for "text" ]
-            [ text "Input text to reverse"
-            , input [ id "text", placeholder "Text to reverse", value model.content, onInput Change ] []
-            ]
-        , div [] [ text (String.reverse model.content) ]
-        , div [] [ text (String.fromInt model.length) ]
+        [ viewInput "Name" "text" "Name" model.name Name
+        , viewInput "Password" "password" "Password" model.password Password
+        , viewInput "PasswordAgain" "password" "Re-enter Password" model.passwordAgain PasswordAgain
+        , viewValidation model
         ]
+
+
+viewInput : String -> String -> String -> String -> (String -> msg) -> Html msg
+viewInput l t p v toMsg =
+    let
+        j =
+            l ++ ": "
+    in
+    label [ for l ]
+        [ text j
+        , input [ id l, type_ t, placeholder p, value v, onInput toMsg ] []
+        ]
+
+
+viewValidation : Model -> Html Msg
+viewValidation model =
+    if String.length model.password <= 0 then
+        div [] []
+
+    else if String.length model.password < 8 then
+        div [ style "color" "red" ] [ text "Password needs to be more than 8 character long" ]
+
+    else if String.any isUpper model.password then
+        div [ style "color" "RED" ] [ text "Password must contain atleast one uppercase letter A..Z" ]
+
+    else if String.any isDigit model.password then
+        div [ style "color" "RED" ] [ text "Password must contain atleast one numeric character 1..9" ]
+
+    else if String.any isLower model.password then
+        div [ style "color" "RED" ] [ text "Password must contain atleast one lowercase letter a..z" ]
+
+    else if String.length model.password /= String.length model.passwordAgain then
+        div [ style "color" "RED" ] [ text "Passwords do not match" ]
+
+    else if model.password == model.passwordAgain then
+        div [ style "color" "green" ] [ text "OK" ]
+
+    else
+        div [] []

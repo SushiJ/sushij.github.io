@@ -2,7 +2,7 @@ module Main exposing (Model, Msg(..), init, main, update, view)
 
 import Browser
 import Char exposing (isDigit, isLower, isUpper)
-import Html exposing (Html, a, div, input, label, text)
+import Html exposing (Html, div, input, label, text)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onInput)
 

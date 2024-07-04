@@ -1,60 +1,44 @@
-module Main exposing (Model, Msg(..), init, main, update, view)
+module Main exposing (Model, main, view)
 
 import Browser
-import Html exposing (Attribute, Html, div, input, label, text)
+import Html exposing (Html, a, div, li, text, ul)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onInput)
 
 
 
 -- MAIN
+--
 
 
+main : Program () Model Msg
 main =
     Browser.sandbox { init = init, update = update, view = view }
 
 
+type Model
+    = Nothing
 
--- MODEL
 
-
-type alias Model =
-    { content : String
-    , length : Int
-    }
+type Msg
+    = Never
 
 
 init : Model
 init =
-    { content = "", length = 0 }
-
-
-
--- UPDATE
-
-
-type Msg
-    = Change String
+    Nothing
 
 
 update : Msg -> Model -> Model
-update msg model =
-    case msg of
-        Change newContent ->
-            { model | content = newContent, length = String.length newContent }
-
-
-
--- VIEW
+update _ model =
+    model
 
 
 view : Model -> Html Msg
-view model =
-    div []
-        [ label [ for "text" ]
-            [ text "Input text to reverse"
-            , input [ id "text", placeholder "Text to reverse", value model.content, onInput Change ] []
-            ]
-        , div [] [ text (String.reverse model.content) ]
-        , div [] [ text (String.fromInt model.length) ]
+view _ =
+    ul []
+        [ li [] [ a [ href "https://sushij.github.io/portfolio/resume.pdf", target "_blank" ] [ text "Resume" ] ]
+        , li [] [ a [ href "https://sushij.github.io/portfolio", target "_blank" ] [ text "Portfolio" ] ]
+        , li [] [ a [ href "https://sushi-cv.vercel.app", target "_blank" ] [ text "CV" ] ]
+        , li [] [ a [ href "https://github.com/sushij", target "_blank" ] [ text "Github" ] ]
+        , li [] [ a [ href "https://www.linkedin.com/in/sushantsharma23", target "_blank" ] [ text "LinkedIn" ] ]
         ]
